@@ -41,6 +41,25 @@ regular enemies without discussing it first.
 - `ServerScriptService/GriffinCombatServer.lua` (Script) — server-authoritative combat logic
 - `StarterPlayer/StarterPlayerScripts/GriffinCombatClient.lua` (LocalScript) — input handling (Q=basic, E=pounce)
 - Boss model "CanopyWarden" in Workspace has a Script `BossEncounter_CanopyWarden.lua` as a sibling of its Humanoid
+- `ReplicatedStorage/GriffinAbilityState.lua` (ModuleScript) — shared cooldown-end timestamps read by both the keyboard client and the combat GUI
+- `StarterGui/GriffinCombatGui` (ScreenGui) with `GriffinCombatGuiClient` (LocalScript) — Claw/Pounce buttons, cooldown display, damage popups
+- `ServerScriptService/GriffinAppearanceServer.lua` (Script) — auto-equips Griffin's wing accessory on spawn from the master copy in `ServerStorage/GriffinCosmetics`
+
+## Recent changes (2026-07-19)
+- Built and wired the combat GUI: Claw/Pounce buttons in `StarterGui`, with cooldown
+  display kept in sync between mouse clicks and Q/E keyboard input via the new shared
+  `GriffinAbilityState` module, plus server-reported damage popups.
+- Added `GriffinAppearanceServer.lua` so every player spawns with Griffin's wing
+  accessory auto-equipped (master copy lives in `ServerStorage/GriffinCosmetics`).
+- Wired Q/E swing animations into `GriffinCombatServer` — but the published clips
+  turned out to be authored on an R6 rig, which silently produces zero motion on our
+  R15 player characters (no errors, `IsPlaying`/`Length` both report fine — only a
+  direct joint-CFrame check revealed the mismatch). Decision: re-author both
+  animations on an R15 rig and publish new asset IDs, rather than switch the game to
+  R6. Waiting on the user to do that in the Animation Editor; once new
+  `rbxassetid://` values exist, swap them into `ClawSwipeAnimation`/
+  `AerialPounceAnimation` in `GriffinCombatServer.lua` and re-verify with the
+  joint-CFrame method (not just track state).
 
 ## Open questions — do not silently decide these, ask first
 1. Selkie's solo-encounter drawback: hard DPS check vs. soft (slow but possible)?
